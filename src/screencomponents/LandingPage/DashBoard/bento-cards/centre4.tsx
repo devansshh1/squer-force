@@ -5,50 +5,72 @@ import {
   Clock,
 } from "lucide-react";
 
-type Card = {
-  title: string;
-  value: string;
-  subtitle: string;
-  icon: React.ReactNode;
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+} from "recharts";
+
+type StatsData = {
+  totalCalls: number;
+  completedCalls: number;
+  successRate: number;
+  avgDuration: number;
 };
 
-const stats: Card[] = [
-  {
-    title: "Total Calls",
-    value: "15",
-    subtitle: "In selected period",
-    icon: <Phone size={18} />,
-  },
-  {
-    title: "Completed Calls",
-    value: "4",
-    subtitle: "Successfully completed",
-    icon: <Check size={18} />,
-  },
-  {
-    title: "Success Rate",
-    value: "0.0%",
-    subtitle: "Call completion rate",
-    icon: <TrendingUp size={18} />,
-  },
-  {
-    title: "Avg Duration",
-    value: "0.45 min",
-    subtitle: "Average call length",
-    icon: <Clock size={18} />,
-  },
-];
+type MonthlyTrend = {
+  month: string;
+  calls: number;
+};
 
-export default function StatsCards() {
+type Props = {
+  data: StatsData;
+  monthlyTrend: MonthlyTrend[];
+};
+export default function StatsCards({
+  data,
+  monthlyTrend,
+}: Props) {
+  const stats = [
+    {
+      title: "Total Calls",
+      value: data.totalCalls,
+      subtitle: "In selected period",
+      icon: <Phone size={18} />,
+    },
+    {
+      title: "Completed Calls",
+      value: data.completedCalls,
+      subtitle: "Successfully completed",
+      icon: <Check size={18} />,
+    },
+    {
+      title: "Success Rate",
+      value: `${data.successRate}%`,
+      subtitle: "Call completion rate",
+      icon: <TrendingUp size={18} />,
+    },
+    {
+      title: "Avg Duration",
+      value: `${data.avgDuration} min`,
+      subtitle: "Average call length",
+      icon: <Clock size={18} />,
+    },
+  ];
+
   return (
-    <section className="w-full py-8 ">
-      <div className="flex gap-10 ml-[40%] mt-[10%] ">
+    <section className="w-full py-8">
+      {/* Cards */}
+      <div className="flex gap-10 ml-[40%] mt-[10%]">
         {stats.map((card) => (
           <div
             key={card.title}
-            className="rounded-2xl border border-green-900/40 bg-[#08120A] p-6 shadow-lg transition-all duration-300 hover:-translate-y-1 hover:border-green-500/50 hover:shadow-green-900/20"
+            className="rounded-2xl border border-green-900/40 bg-[#08120A] p-6 shadow-lg"
           >
-            {/* Header */}
             <div className="flex items-center justify-between">
               <h3 className="text-sm font-medium text-gray-300">
                 {card.title}
@@ -59,7 +81,6 @@ export default function StatsCards() {
               </div>
             </div>
 
-            {/* Main Value */}
             <div className="mt-6">
               <h2 className="text-4xl font-bold text-white">
                 {card.value}
@@ -71,6 +92,34 @@ export default function StatsCards() {
             </div>
           </div>
         ))}
+      </div>
+
+      {/* Graph */}
+      <div className="mt-16 mx-auto w-[90%] rounded-2xl border border-green-900/40 bg-[#08120A] p-6">
+        <h2 className="text-xl font-semibold text-white mb-2">
+          Monthly Call Trends
+        </h2>
+
+        <p className="text-gray-400 text-sm mb-6">
+          Call volume trends by month
+        </p>
+
+        <div className="h-[400px]">
+          <ResponsiveContainer width="100%" height="100%">
+            <LineChart data={monthlyTrend}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#1f2937" />
+              <XAxis dataKey="month" stroke="#9ca3af" />
+              <YAxis stroke="#9ca3af" />
+              <Tooltip />
+              <Line
+                type="monotone"
+                dataKey="calls"
+                stroke="#22c55e"
+                strokeWidth={3}
+              />
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
       </div>
     </section>
   );
